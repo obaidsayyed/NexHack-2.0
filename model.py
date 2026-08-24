@@ -25,7 +25,7 @@ X_train, X_test, y_train,y_test = train_test_split(X,y, test_size = 0.25, random
 
 model= xg.XGBClassifier (n_estimators = 100 ,  max_depth = 5,
                         learning_rate = 0.05, random_state = 42,
-                        subsample = 0.08, eval_metric = "logloss"
+                        subsample = 0.8, eval_metric = "logloss"
                         )
 model.fit(X_train,y_train)
 
@@ -51,8 +51,16 @@ shap_values = explainer(X_test)
 
 # traning data eval metrics
 
-
 train_pred = model.predict(X_train)
+train_prob = model.predict_proba(X_train)[:,1]
+acc2 = accuracy_score(y_train, train_pred)
+recall2 = recall_score(y_train,train_pred)
+roc2 = roc_auc_score(y_train, train_prob)
+prec2 = precision_score(y_train, train_pred)
+
+print(f"A: {acc2}, R: {recall2}, roc: {roc2}, prec: {prec2}")
+
+
 
 
 
