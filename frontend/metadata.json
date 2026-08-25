@@ -1,0 +1,6 @@
+{
+  "name": "Heart Failure Readmission Clinical Support System",
+  "description": "Clinical decision-support application predicting 30-day heart failure readmissions with XGBoost risk scoring, SHAP explainability, and Gemini AI clinical interpretation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
