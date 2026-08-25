@@ -1,27 +1,57 @@
 import { DashboardStats, Patient, PredictionResult } from '../types/clinical';
 import { apiFetch, checkApiHealth } from './client';
+import { supabase, isSupabaseConfigured } from './supabase';
 import { fetchPatients } from './patients';
 
 const PREDICTIONS_STORE_KEY = 'hf_predictions_store_v1';
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
+  // 1. Try FastAPI backend
   const isHealthy = await checkApiHealth();
   if (isHealthy) {
     try {
       return await apiFetch<DashboardStats>('/api/dashboard/stats');
     } catch (e) {
-      console.warn('FastAPI error on /api/dashboard/stats, computing from available data:', e);
+      console.warn('FastAPI error on /api/dashboard/stats:', e);
     }
   }
 
-  // Calculate local stats from current patient store and predictions store
+  // 2. Pull data from Supabase or localStorage
   const patients = await fetchPatients();
 
   let storedPredictions: PredictionResult[] = [];
-  try {
-    const raw = localStorage.getItem(PREDICTIONS_STORE_KEY);
-    if (raw) storedPredictions = JSON.parse(raw);
-  } catch {}
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('predictions')
+        .select('*')
+        .order('prediction_date', { ascending: false });
+      if (!error && data) {
+        storedPredictions = data.map((row: any) => ({
+          prediction_id: row.prediction_id,
+          patient_id: row.patient_id,
+          prediction_date: row.prediction_date,
+          readmission_probability: Number(row.readmission_probability),
+          risk_level: row.risk_level,
+          model_prediction: row.model_prediction,
+          shap_explanation: row.shap_explanation,
+          shap_status: row.shap_status,
+          clinical_features: row.clinical_features,
+        }));
+      }
+    } catch (e) {
+      console.warn('Supabase error fetching predictions for dashboard:', e);
+    }
+  }
+
+  // Fall back to localStorage if Supabase returned nothing
+  if (storedPredictions.length === 0) {
+    try {
+      const raw = localStorage.getItem(PREDICTIONS_STORE_KEY);
+      if (raw) storedPredictions = JSON.parse(raw);
+    } catch {}
+  }
 
   const highRiskPatientsList = patients.filter((p) => p.last_risk_level === 'HIGH');
   const mediumRiskList = patients.filter((p) => p.last_risk_level === 'MEDIUM');

@@ -6,7 +6,8 @@ import { PredictionForm } from '../components/prediction/PredictionForm';
 import { PredictionResultView } from '../components/prediction/PredictionResultView';
 import { PatientReport } from '../components/report/PatientReport';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { UserCheck } from 'lucide-react';
+import { DocumentUpload } from '../components/common/DocumentUpload';
+import { UserCheck, Paperclip } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Card } from '../components/common/Card';
 import { MagneticButton } from '../components/common/MagneticButton';
@@ -132,6 +133,28 @@ export const NewPatient: React.FC<NewPatientProps> = ({
               onSubmitPrediction={handleSubmitPrediction}
               isSubmitting={isSubmitting}
             />
+
+            {/* Clinical Document Upload Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.2 }}
+              className="mt-6"
+            >
+              <Card padding="md">
+                <div className="flex items-center gap-2 mb-4">
+                  <Paperclip className="w-5 h-5 text-primary" />
+                  <h3 className="text-lg font-bold text-text-main">Attach Clinical Documents</h3>
+                </div>
+                <p className="text-sm text-text-muted mb-4">
+                  Upload supporting lab results, imaging reports, or transfer notes for this assessment.
+                </p>
+                <DocumentUpload
+                  patientId={patient?.patient_id || 'unassigned'}
+                  onUploadComplete={(url) => console.log('Document uploaded:', url)}
+                />
+              </Card>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -69,18 +69,42 @@ export async function logoutFromSupabase(): Promise<void> {
   localStorage.removeItem('hf_user_profile');
 }
 
+export async function loginWithGoogle(): Promise<void> {
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      throw new Error(error.message);
+    }
+  } else {
+    throw new Error('Supabase is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env');
+  }
+}
+
 export async function getCurrentUserSession(): Promise<UserProfile | null> {
   if (isSupabaseConfigured) {
-    const { data } = await supabase.auth.getUser();
-    if (data?.user) {
-      return {
-        id: data.user.id,
-        email: data.user.email || '',
-        full_name: data.user.user_metadata?.full_name || 'Dr. Clinical User',
-        role: data.user.user_metadata?.role || 'Attending Cardiologist',
-        hospital_name: 'St. Jude Heart & Vascular Institute',
-        department: 'Cardiology Decision Support',
-      };
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (!error && data?.session?.user) {
+        const user = data.session.user;
+        const profile: UserProfile = {
+          id: user.id,
+          email: user.email || '',
+          full_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Dr. Clinical User',
+          role: user.user_metadata?.role || 'Attending Cardiologist',
+          hospital_name: 'St. Jude Heart & Vascular Institute',
+          department: 'Cardiology Decision Support',
+        };
+        localStorage.setItem('hf_demo_access_token', data.session.access_token);
+        localStorage.setItem('hf_user_profile', JSON.stringify(profile));
+        return profile;
+      }
+    } catch (e) {
+      console.warn('Error reading Supabase session:', e);
     }
   }
 
