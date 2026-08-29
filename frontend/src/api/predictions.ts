@@ -80,12 +80,29 @@ function mapFeaturesToApiPayload(features: ClinicalFeatures): any {
 }
 
 function mapApiResponseToResult(apiRes: any, request: PredictionRequest): PredictionResult {
+  if (apiRes.shap_explanation && apiRes.gemini_interpretation) {
+    return {
+      prediction_id: apiRes.prediction_id || crypto.randomUUID(),
+      patient_id: request.patient_id,
+      patient_name: apiRes.patient_name,
+      prediction_date: apiRes.prediction_date || new Date().toISOString(),
+      readmission_probability: apiRes.readmission_probability,
+      risk_level: apiRes.risk_level,
+      model_prediction: apiRes.model_prediction || (apiRes.prediction === 1 ? 'Likely Readmission' : 'Unlikely Readmission'),
+      shap_explanation: apiRes.shap_explanation,
+      gemini_interpretation: apiRes.gemini_interpretation,
+      shap_status: apiRes.shap_status || 'success',
+      gemini_status: apiRes.gemini_status || 'success',
+      clinical_features: request.clinical_features,
+    };
+  }
+
   return {
-    prediction_id: crypto.randomUUID(),
+    prediction_id: apiRes.prediction_id || crypto.randomUUID(),
     patient_id: request.patient_id,
     prediction_date: new Date().toISOString(),
     readmission_probability: apiRes.readmission_probability,
-    risk_level: apiRes.risk_level === 'High' ? 'HIGH' : apiRes.risk_level === 'Moderate' ? 'MEDIUM' : 'LOW',
+    risk_level: apiRes.risk_level === 'High' || apiRes.risk_level === 'HIGH' ? 'HIGH' : apiRes.risk_level === 'Moderate' || apiRes.risk_level === 'MEDIUM' ? 'MEDIUM' : 'LOW',
     model_prediction: apiRes.prediction === 1 ? 'Likely Readmission' : 'Unlikely Readmission',
     shap_explanation: (apiRes.top_factors || []).map((factor: any) => ({
       feature_name: factor.feature,

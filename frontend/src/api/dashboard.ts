@@ -10,9 +10,9 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
   const isHealthy = await checkApiHealth();
   if (isHealthy) {
     try {
-      return await apiFetch<DashboardStats>('/api/dashboard/stats');
+      return await apiFetch<DashboardStats>('/dashboard/stats');
     } catch (e) {
-      console.warn('FastAPI error on /api/dashboard/stats:', e);
+      console.warn('FastAPI error on /dashboard/stats:', e);
     }
   }
 

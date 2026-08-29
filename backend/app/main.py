@@ -63,16 +63,19 @@ app.include_router(
 
 
 # ---------------------------------------------------------
-# Root Endpoint
+# Root & Health Endpoints
 # ---------------------------------------------------------
 
 @app.get("/")
 def root():
-
     logger.info("Root endpoint accessed")
-
     return {
         "message": API_TITLE,
         "status": "running",
         "version": API_VERSION,
     }
+
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}

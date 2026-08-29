@@ -52,7 +52,7 @@ export async function fetchPatients(query?: string): Promise<Patient[]> {
   const isHealthy = await checkApiHealth();
   if (isHealthy) {
     try {
-      return await apiFetch<Patient[]>('/api/patients', {
+      return await apiFetch<Patient[]>('/patients', {
         params: query ? { q: query } : undefined,
       });
     } catch (e) {
@@ -95,7 +95,7 @@ export async function fetchPatientById(patientId: string): Promise<Patient> {
   const isHealthy = await checkApiHealth();
   if (isHealthy) {
     try {
-      return await apiFetch<Patient>(`/api/patients/${patientId}`);
+      return await apiFetch<Patient>(`/patients/${patientId}`);
     } catch (e) {
       console.warn(`FastAPI error on fetchPatientById ${patientId}:`, e);
     }
@@ -127,7 +127,7 @@ export async function createPatient(data: PatientCreateDTO): Promise<Patient> {
   const isHealthy = await checkApiHealth();
   if (isHealthy) {
     try {
-      return await apiFetch<Patient>('/api/patients', {
+      return await apiFetch<Patient>('/patients', {
         method: 'POST',
         body: JSON.stringify(data),
       });
@@ -173,7 +173,7 @@ export async function updatePatient(patientId: string, updates: Partial<Patient>
   const isHealthy = await checkApiHealth();
   if (isHealthy) {
     try {
-      return await apiFetch<Patient>(`/api/patients/${patientId}`, {
+      return await apiFetch<Patient>(`/patients/${patientId}`, {
         method: 'PUT',
         body: JSON.stringify(updates),
       });
