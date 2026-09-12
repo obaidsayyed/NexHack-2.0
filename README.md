@@ -11,3 +11,7 @@ Production-ready FastAPI backend for predicting 30-day readmission in heart fail
 - **SHAP**: Local feature explainability
 - **Google Gemini API**: Clinical interpretation & recommendations
 - **Supabase**: PostgreSQL Database & Auth (JWT verification)
+
+
+# Frontend 
+
