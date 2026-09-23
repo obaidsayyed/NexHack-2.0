@@ -6,6 +6,8 @@ Repository for NexHack 2.0.
 Production-ready FastAPI backend for predicting 30-day readmission in heart failure patients.
 
 ## Tech Stack
+
+## Backend 
 - **FastAPI**: REST API framework
 - **XGBoost**: Trained predictive model
 - **SHAP**: Local feature explainability
@@ -14,4 +16,3 @@ Production-ready FastAPI backend for predicting 30-day readmission in heart fail
 
 
 # Frontend 
-
