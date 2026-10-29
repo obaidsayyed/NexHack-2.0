@@ -34,7 +34,7 @@ typing_extensions==4.16.0
 tzdata==2026.3
 uvicorn==0.52.4
 watchfiles==1.2.0
-websockets==17.0.1
+websockets>=11,<16
 xgboost==3.4.1
 
 supabase>=2.18,<3
